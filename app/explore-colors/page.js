@@ -80,9 +80,6 @@ async function getColors(searchParams) {
         case 'popular':
           return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
         case 'name':
-          if (!a.title || !b.title) {
-            return !a.title ? 1 : -1; // Sort undefined titles to the end
-          }
           return a.title.localeCompare(b.title);
         case 'newest':
         default:

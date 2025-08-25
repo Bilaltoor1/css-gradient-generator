@@ -1,4 +1,7 @@
 export const GRADIENT_CATEGORIES = [
+  // All categories
+  { id: 'all', name: 'All Gradients', color: '#6B7280', description: 'Browse all gradient collections' },
+  
   // Color-based categories
   { id: 'red', name: 'Red', color: '#EF4444', description: 'Passionate and energetic red gradients' },
   { id: 'blue', name: 'Blue', color: '#3B82F6', description: 'Trustworthy and calming blue gradients' },
@@ -22,6 +25,18 @@ export const GRADIENT_CATEGORIES = [
   { id: 'ocean', name: 'Ocean', color: '#0EA5E9', description: 'Deep and flowing ocean-themed gradients' },
   { id: 'forest', name: 'Forest', color: '#059669', description: 'Lush and natural forest gradients' },
   { id: 'neon', name: 'Neon', color: '#FF00FF', description: 'Electric and futuristic neon gradients' },
+  
+  // Additional theme categories
+  { id: 'cosmic', name: 'Cosmic', color: '#8B5CF6', description: 'Space and galaxy-inspired gradients' },
+  { id: 'metallic', name: 'Metallic', color: '#71717A', description: 'Shiny metallic and chrome gradients' },
+  { id: 'earth', name: 'Earth', color: '#A16207', description: 'Natural earth-toned gradients' },
+  { id: 'fire', name: 'Fire', color: '#DC2626', description: 'Hot and fiery gradient combinations' },
+  { id: 'ice', name: 'Ice', color: '#06B6D4', description: 'Cool and icy gradient effects' },
+  { id: 'urban', name: 'Urban', color: '#374151', description: 'Modern city-inspired gradients' },
+  { id: 'retro', name: 'Retro', color: '#7C2D12', description: 'Vintage and retro-style gradients' },
+  { id: 'modern', name: 'Modern', color: '#1F2937', description: 'Contemporary and minimalist gradients' },
+  { id: 'dark', name: 'Dark', color: '#111827', description: 'Dark and moody gradient themes' },
+  { id: 'light', name: 'Light', color: '#F9FAFB', description: 'Bright and airy light gradients' },
 ];
 
 export const COLOR_SHADE_CATEGORIES = [

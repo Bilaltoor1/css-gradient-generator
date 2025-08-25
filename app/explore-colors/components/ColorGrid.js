@@ -74,7 +74,13 @@ export default function ColorGrid({ initialItems, categories }) {
 
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(el, { width: w, height: h, pixelRatio: 2 });
+      // Use pixelRatio: 1 and exact dimensions to get the selected resolution
+      const dataUrl = await toPng(el, { 
+        width: w, 
+        height: h, 
+        pixelRatio: 1,
+        quality: 0.95
+      });
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `${colorName}-color-${w}x${h}.png`;

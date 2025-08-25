@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { RiCss3Fill, RiTailwindCssFill } from "react-icons/ri";
 import { toast } from "react-hot-toast";
 import { useGradientControls } from './GradientControlsContext';
+import Link from 'next/link';
 
 // Time ago formatter
 function timeAgo(date) {
@@ -153,7 +154,7 @@ export default function GradientGrid({ initialItems, hasMore, currentPage, total
 
   const copyTailwind = async (g) => {
     const css = buildGradientCss(adjusted(g));
-    const tw = buildTailwindClass(css);
+    const tw = buildTailwindClass(css, type, angle);
     await navigator.clipboard.writeText(tw);
     toast.success("Tailwind class copied to clipboard!");
   };
@@ -166,7 +167,13 @@ export default function GradientGrid({ initialItems, hasMore, currentPage, total
 
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(el, { width: w, height: h, pixelRatio: 2 });
+      // Use pixelRatio: 1 and exact dimensions to get the selected resolution
+      const dataUrl = await toPng(el, { 
+        width: w, 
+        height: h, 
+        pixelRatio: 1,
+        quality: 0.95
+      });
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `${gradientName}-gradient-${w}x${h}.png`;
@@ -188,12 +195,18 @@ export default function GradientGrid({ initialItems, hasMore, currentPage, total
           const id = `grad-card-${g._id}`;
           return (
             <div key={g._id} className="group bg-card/80 backdrop-blur rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300">
-              <div id={id} className="h-48 w-full" style={{ background: css }} />
+              {/* Clickable gradient preview */}
+              <Link href={`/gradient/${g._id}`} className="block">
+                <div id={id} className="h-48 w-full cursor-pointer hover:scale-105 transition-transform duration-300" style={{ background: css }} />
+              </Link>
+              
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors">
-                    {g.title}
-                  </h3>
+                  <Link href={`/gradient/${g._id}`} className="block">
+                    <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors cursor-pointer">
+                      {g.title}
+                    </h3>
+                  </Link>
                   <p className="text-xs text-muted-foreground">
                     {timeAgo(g.createdAt)}
                   </p>
