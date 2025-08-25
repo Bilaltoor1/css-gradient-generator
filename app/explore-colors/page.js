@@ -80,7 +80,7 @@ async function getColors(searchParams) {
         case 'popular':
           return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
         case 'name':
-          return a.title.localeCompare(b.title);
+          return (a.title || '').localeCompare(b.title || '');
         case 'newest':
         default:
           return new Date(b.createdAt) - new Date(a.createdAt);

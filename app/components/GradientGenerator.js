@@ -486,7 +486,7 @@ export default function GradientGenerator({ onGradientChange, onTailwindBgChange
       </div>
 
       {/* Gradient Display with CSS */}
-      <div 
+      {/* <div 
         ref={gradientRef}
         className="w-full min-h-32 rounded-xl border border-black/10 dark:border-white/15 p-4 flex flex-col justify-end"
         style={{ background: gradientCSS }}
@@ -503,7 +503,7 @@ export default function GradientGenerator({ onGradientChange, onTailwindBgChange
             Copy CSS
           </Button>
         </div>
-      </div>
+      </div> */}
       
    
 

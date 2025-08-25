@@ -10,8 +10,9 @@ export default function Footer() {
         { href: "/palette", label: "Color Palette Generator" },
         { href: "/gradient", label: "Gradient Generator" },
         { href: "/text-gradient", label: "Text Gradient Generator" },
+        { href: "/color-converter", label: "Color Converter" },
         { href: "/gradient/explore", label: "Explore Gradients" },
-  { href: "/color", label: "Color Shades" },
+        { href: "/explore-colors", label: "Explore Colors" },
       ]
     },
     {
@@ -28,12 +29,12 @@ export default function Footer() {
     {
       title: "Color Shades",
       links: [
-  { href: "/color/red", label: "Red Shades" },
-  { href: "/color/blue", label: "Blue Shades" },
-  { href: "/color/green", label: "Green Shades" },
-  { href: "/color/purple", label: "Purple Shades" },
-  { href: "/color/orange", label: "Orange Shades" },
-  { href: "/color/yellow", label: "Yellow Shades" },
+        { href: "/explore-colors?category=red", label: "Red Shades" },
+        { href: "/explore-colors?category=blue", label: "Blue Shades" },
+        { href: "/explore-colors?category=green", label: "Green Shades" },
+        { href: "/explore-colors?category=purple", label: "Purple Shades" },
+        { href: "/explore-colors?category=orange", label: "Orange Shades" },
+        { href: "/explore-colors?category=yellow", label: "Yellow Shades" },
       ]
     },
     {

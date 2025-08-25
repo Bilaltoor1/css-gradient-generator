@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getAllBlogs } from '@/lib/mdx';
 
 export async function generateMetadata() {
@@ -33,9 +34,11 @@ export default function BlogPage() {
               <article key={blog.slug} className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                 {blog.frontMatter.image && (
                   <div className="aspect-video bg-gradient-to-br from-purple-400 to-blue-500">
-                    <img 
+                    <Image 
                       src={blog.frontMatter.image} 
                       alt={blog.frontMatter.title}
+                      width={400}
+                      height={225}
                       className="w-full h-full object-cover"
                     />
                   </div>

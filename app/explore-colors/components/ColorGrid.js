@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download } from "lucide-react";
@@ -101,22 +102,36 @@ export default function ColorGrid({ initialItems, categories }) {
           const id = `color-card-${uniqueKey}`;
           return (
             <div key={uniqueKey} className="group bg-card/80 backdrop-blur rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300">
-              <div id={id} className="h-48 w-full" style={{ backgroundColor: `#${colorShade.baseHex?.replace('#', '') || colorShade.hex}` }} />
-              <div className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors">
-                    {colorShade.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {timeAgo(colorShade.createdAt)}
-                  </p>
-                </div>
+              <Link href={`/explore-colors/${colorShade.slug}`} className="block">
+                <div id={id} className="h-48 w-full cursor-pointer" style={{ backgroundColor: `#${colorShade.baseHex?.replace('#', '') || colorShade.hex}` }} />
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors">
+                      {colorShade.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      {timeAgo(colorShade.createdAt)}
+                    </p>
+                  </div>
 
+                  {/* Show color hex */}
+                  <div className="text-xs text-muted-foreground font-mono">
+                    #{colorShade.baseHex?.replace('#', '') || colorShade.hex}
+                  </div>
+                </div>
+              </Link>
+              
+              {/* Action buttons - outside of link to prevent nested interaction */}
+              <div className="px-4 pb-4">
                 <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => copyCss({ hex: colorShade.baseHex?.replace('#', '') || colorShade.hex })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      copyCss({ hex: colorShade.baseHex?.replace('#', '') || colorShade.hex });
+                    }}
                     className="cursor-pointer hover:bg-blue-50 hover:text-blue-600 border-blue-200"
                   >
                     <RiCss3Fill className="w-4 h-4 mr-1" />
@@ -125,20 +140,19 @@ export default function ColorGrid({ initialItems, categories }) {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => copyTailwind({ hex: colorShade.baseHex?.replace('#', '') || colorShade.hex })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      copyTailwind({ hex: colorShade.baseHex?.replace('#', '') || colorShade.hex });
+                    }}
                     className="cursor-pointer hover:bg-cyan-50 hover:text-cyan-600 border-cyan-200"
                   >
                     <RiTailwindCssFill className="w-4 h-4 mr-1" />
                     Tailwind
                   </Button>
-                  <ExportMenu onPick={(w, h) => exportImage(id, w, h, colorShade.title)} />
-                </div>
-
-                {/* color category removed per request */}
-
-                {/* Show color hex */}
-                <div className="text-xs text-muted-foreground font-mono">
-                  #{colorShade.baseHex?.replace('#', '') || colorShade.hex}
+                  <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                    <ExportMenu onPick={(w, h) => exportImage(id, w, h, colorShade.title)} />
+                  </div>
                 </div>
               </div>
             </div>

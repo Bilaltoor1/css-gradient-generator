@@ -1,168 +1,240 @@
 import { notFound } from 'next/navigation';
-import { getGradientById, getAllGradients, generateSEOData, generateGradientSchema } from '@/lib/mdx';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { getAllGradients } from '@/lib/mdx';
+import { buildGradientCss, buildTailwindClass } from '@/lib/gradients';
+import { GRADIENT_CATEGORIES } from '@/data/categories';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Copy, Download } from 'lucide-react';
+import { RiCss3Fill, RiTailwindCssFill } from 'react-icons/ri';
 import Link from 'next/link';
+import GradientActions from './components/GradientActions';
+import CopyButtons from './components/CopyButtons';
 
-// Generate static params for all gradients
 export async function generateStaticParams() {
   const gradients = getAllGradients();
   return gradients.map((gradient) => ({
-    id: gradient.frontMatter.id,
+    id: gradient.slug,
   }));
 }
 
 export async function generateMetadata({ params }) {
-  const { id } = await params;
-  const gradient = getGradientById(id);
+  const resolvedParams = await params;
+  const gradient = await getGradient(resolvedParams.id);
 
   if (!gradient) {
     return {
       title: 'Gradient Not Found',
-      description: 'The requested gradient could not be found.',
     };
   }
 
   return {
-    title: `${gradient.frontMatter.title} - Gradient Generator`,
+    title: `${gradient.frontMatter.title} - Beautiful CSS Gradient`,
     description: gradient.frontMatter.description,
     keywords: gradient.frontMatter.keywords,
   };
 }
 
-export default async function GradientDetailPage({ params }) {
-  const { id } = await params;
-  const gradient = getGradientById(id);
+async function getGradient(id) {
+  const gradients = getAllGradients();
+  return gradients.find(gradient => gradient.slug === id);
+}
 
+export default async function GradientDetailPage({ params }) {
+  const resolvedParams = await params;
+  const gradient = await getGradient(resolvedParams.id);
+  
   if (!gradient) {
     notFound();
   }
 
-  const schema = generateGradientSchema(gradient);
+  const { frontMatter } = gradient;
+  const cssGradient = frontMatter.cssGradient || buildGradientCss(frontMatter);
+  const category = GRADIENT_CATEGORIES.find(cat => cat.id === frontMatter.category);
+  
+  // Extract angle from CSS gradient for Tailwind class generation
+  const angleMatch = cssGradient.match(/(\d+)deg/);
+  const angle = angleMatch ? parseInt(angleMatch[1]) : 135;
+  const gradientType = cssGradient.includes('radial') ? 'radial' : 
+                      cssGradient.includes('conic') ? 'conic' : 'linear';
+  
+  const tailwindClass = buildTailwindClass(cssGradient, gradientType, angle);
 
   return (
     <div className="min-h-screen bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
-      
-      {/* Hero Section with Gradient Preview */}
-      <section 
-        className="relative py-20"
-        style={{ background: gradient.frontMatter.cssGradient }}
-      >
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center text-white">
-            <div className="flex items-center justify-center gap-2 text-sm mb-4">
-              <span className="bg-white/20 px-3 py-1 rounded-full">
-                {gradient.frontMatter.category}
-              </span>
-              {gradient.frontMatter.featured && (
-                <span className="bg-yellow-500/30 px-3 py-1 rounded-full">
-                  Featured
-                </span>
+      {/* Mobile-responsive full-screen gradient */}
+      <div className="relative h-screen w-full">
+        <div 
+          id={`gradient-preview-${resolvedParams.id}`}
+          className="w-full h-full"
+          style={{ background: cssGradient }}
+        />
+        
+        {/* Export buttons overlay - responsive positioning */}
+        <div className="absolute top-4 right-4 md:top-6 md:right-6">
+          <GradientActions 
+            gradientId={resolvedParams.id}
+            gradientName={frontMatter.title}
+            cssGradient={cssGradient}
+            tailwindClass={tailwindClass}
+          />
+        </div>
+
+        {/* Back button overlay - responsive positioning */}
+        <div className="absolute top-4 left-4 md:top-6 md:left-6">
+          <Link 
+            href="/gradient/explore" 
+            className="inline-flex items-center px-3 py-2 md:px-4 md:py-2 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 rounded-lg transition-colors text-sm md:text-base"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1 md:mr-2" />
+            <span className="hidden sm:inline">Back to</span> Gradients
+          </Link>
+        </div>
+
+        {/* Gradient info overlay - mobile responsive */}
+        <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-6 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{frontMatter.title}</h1>
+              {frontMatter.featured && (
+                <Badge variant="secondary" className="bg-white/20 text-white border-white/30 w-fit">Featured</Badge>
               )}
-              </div>
-              
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                {gradient.frontMatter.title}
-              </h1>
-              
-              <p className="text-xl text-white/90 max-w-3xl mx-auto">
-                {gradient.frontMatter.description}
-              </p>
-              
-              <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-                <button 
-                  onClick={() => navigator.clipboard.writeText(gradient.frontMatter.cssGradient)}
-                  className="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-medium transition-colors"
+            </div>
+            
+            <p className="text-white/80 text-sm sm:text-base md:text-lg mb-3 md:mb-4">{frontMatter.description}</p>
+            
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              {category && (
+                <Badge 
+                  variant="outline" 
+                  className="bg-white/20 text-white border-white/30 text-xs md:text-sm"
                 >
-                  Copy CSS
-                </button>
-                <button 
-                  onClick={() => navigator.clipboard.writeText(gradient.frontMatter.colors.join(', '))}
-                  className="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-lg font-medium transition-colors"
-                >
-                  Copy Colors
-                </button>
-              </div>
+                  {category.name}
+                </Badge>
+              )}
+              {frontMatter.tags?.slice(0, 3).map(tag => (
+                <Badge key={tag} variant="secondary" className="bg-white/20 text-white border-white/30 text-xs md:text-sm">{tag}</Badge>
+              ))}
             </div>
           </div>
-        </section>
-
-        {/* Color Information */}
-        <section className="max-w-4xl mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            {/* Colors */}
-            <div className="bg-card rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4">Color Palette</h2>
-              <div className="space-y-3">
-                {gradient.frontMatter.colors?.map((color, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div 
-                      className="w-12 h-12 rounded-lg border border-border"
-                      style={{ backgroundColor: color }}
-                    />
-                    <div>
-                      <div className="font-mono text-sm">{color}</div>
-                      <div className="text-xs text-muted-foreground">
-                        Color {index + 1}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* CSS Code */}
-            <div className="bg-card rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4">CSS Code</h2>
-              <div className="bg-muted rounded p-4">
-                <code className="text-sm break-all">
-                  background: {gradient.frontMatter.cssGradient};
-                </code>
-              </div>
-              <button 
-                onClick={() => navigator.clipboard.writeText(`background: ${gradient.frontMatter.cssGradient};`)}
-                className="mt-3 text-primary hover:text-primary/80 text-sm font-medium"
-              >
-                Copy to clipboard
-              </button>
-            </div>
-          </div>
-
-          {/* Article Content */}
-          <div className="prose prose-lg max-w-none dark:prose-invert">
-            <MDXRemote source={gradient.content} />
-          </div>
-          
-          {/* Tags */}
-          {gradient.frontMatter.tags && gradient.frontMatter.tags.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-border">
-              <h3 className="text-lg font-semibold mb-4">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {gradient.frontMatter.tags.map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Navigation */}
-          <div className="mt-12 pt-8 border-t border-border">
-            <Link 
-              href="/gradient/explore"
-              className="inline-flex items-center text-primary hover:text-primary/80 font-medium"
-            >
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to all gradients
-            </Link>
-          </div>
-        </section>
+        </div>
       </div>
-    );
+
+      {/* CSS and Tailwind copy section - mobile responsive */}
+      <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
+        {/* Copy CSS and Tailwind - side by side layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          {/* CSS Copy */}
+          <div className="space-y-3 md:space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+                <RiCss3Fill className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+                CSS Code
+              </h2>
+            </div>
+            
+            <div className="relative group">
+              <div className="bg-muted border border-border rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between p-3 bg-muted-foreground/5 border-b">
+                  <span className="text-sm font-medium text-muted-foreground">CSS</span>
+                  <CopyButtons cssGradient={cssGradient} type="css" />
+                </div>
+                <pre className="p-4 text-sm overflow-x-auto">
+                  <code className="text-foreground">{`background: ${cssGradient};`}</code>
+                </pre>
+              </div>
+            </div>
+          </div>
+
+          {/* Tailwind Copy */}
+          <div className="space-y-3 md:space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+                <RiTailwindCssFill className="w-5 h-5 md:w-6 md:h-6 text-cyan-600" />
+                Tailwind CSS
+              </h2>
+            </div>
+            
+            <div className="relative group">
+              <div className="bg-muted border border-border rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between p-3 bg-muted-foreground/5 border-b">
+                  <span className="text-sm font-medium text-muted-foreground">Tailwind</span>
+                  <CopyButtons tailwindClass={tailwindClass} type="tailwind" />
+                </div>
+                <pre className="p-4 text-sm overflow-x-auto">
+                  <code className="text-foreground break-all">{tailwindClass}</code>
+                </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Technical Details - mobile responsive grid */}
+        <div className="space-y-4">
+          <h2 className="text-lg md:text-xl font-semibold">Technical Details</h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="p-3 md:p-4 border border-border rounded-lg bg-card">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Type</label>
+              <p className="font-mono text-sm md:text-base font-medium mt-1">{gradientType.charAt(0).toUpperCase() + gradientType.slice(1)}</p>
+            </div>
+            
+            <div className="p-3 md:p-4 border border-border rounded-lg bg-card">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Angle</label>
+              <p className="font-mono text-sm md:text-base font-medium mt-1">{angle}°</p>
+            </div>
+            
+            <div className="p-3 md:p-4 border border-border rounded-lg bg-card">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Colors</label>
+              <p className="font-mono text-sm md:text-base font-medium mt-1">{frontMatter.colors?.length || 0} stops</p>
+            </div>
+
+            <div className="p-3 md:p-4 border border-border rounded-lg bg-card">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Category</label>
+              <p className="font-mono text-sm md:text-base font-medium mt-1">{category?.name || 'Modern'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Color Palette - responsive grid */}
+        <div className="space-y-4">
+          <h2 className="text-lg md:text-xl font-semibold">Color Palette</h2>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+            {frontMatter.colors?.map((color, index) => (
+              <div key={index} className="p-3 md:p-4 border border-border rounded-lg bg-card">
+                <div 
+                  className="w-full h-12 md:h-16 rounded-lg border border-border shadow-sm mb-2 md:mb-3"
+                  style={{ backgroundColor: color }}
+                />
+                <p className="font-mono text-xs md:text-sm font-medium truncate">{color}</p>
+                <p className="text-xs text-muted-foreground">Stop {index + 1}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Usage Examples - mobile responsive */}
+        <div className="space-y-4">
+          <h2 className="text-lg md:text-xl font-semibold">Usage Examples</h2>
+          
+          <div className="p-4 md:p-6 border border-border rounded-lg bg-muted/50">
+            <p className="text-muted-foreground mb-4 text-sm md:text-base">Perfect for:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <ul className="list-disc list-inside space-y-1 md:space-y-2 text-sm text-muted-foreground">
+                <li>Modern website backgrounds</li>
+                <li>Mobile app interfaces</li>
+                <li>UI components and buttons</li>
+                <li>Hero sections and banners</li>
+              </ul>
+              <ul className="list-disc list-inside space-y-1 md:space-y-2 text-sm text-muted-foreground">
+                <li>Brand identity materials</li>
+                <li>Social media graphics</li>
+                <li>Card and container styling</li>
+                <li>{category?.name.toLowerCase() || 'modern'} themed designs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -196,13 +196,13 @@ export default function GradientGrid({ initialItems, hasMore, currentPage, total
           return (
             <div key={g._id} className="group bg-card/80 backdrop-blur rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300">
               {/* Clickable gradient preview */}
-              <Link href={`/gradient/${g._id}`} className="block">
+              <Link href={`/gradient/explore/${g._id}`} className="block">
                 <div id={id} className="h-48 w-full cursor-pointer hover:scale-105 transition-transform duration-300" style={{ background: css }} />
               </Link>
               
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <Link href={`/gradient/${g._id}`} className="block">
+                  <Link href={`/gradient/explore/${g._id}`} className="block">
                     <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors cursor-pointer">
                       {g.title}
                     </h3>

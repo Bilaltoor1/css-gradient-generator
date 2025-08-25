@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { hsvToHex } from "./PaletteUtils";
 
 export default function ColorWheel({ size = 260, hsv, onChange, className = "" }) {
@@ -43,9 +43,9 @@ export default function ColorWheel({ size = 260, hsv, onChange, className = "" }
     ctx.globalCompositeOperation = "destination-out";
     ctx.fill();
     ctx.globalCompositeOperation = "source-over";
-  }, [size]);
+  }, [size, radius]); // Added radius as dependency
 
-  const handlePointer = (clientX, clientY) => {
+  const handlePointer = useCallback((clientX, clientY) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const x = clientX - rect.left - radius;
     const y = clientY - rect.top - radius;
@@ -59,9 +59,8 @@ export default function ColorWheel({ size = 260, hsv, onChange, className = "" }
   // Ensure numeric values are passed
   const newH = Number.isFinite(angle) ? angle : 0;
   const newS = Number.isFinite(sat) ? sat : 0;
-  const newV = (hsv && typeof hsv.v === 'number') ? hsv.v : 1;
-  onChange({ h: newH, s: newS, v: newV });
-  };
+    onChange({ h: newH, s: newS, v: hsv.v });
+  }, [radius, hsv.v, onChange]);
 
   useEffect(() => {
     const onMove = (e) => {
@@ -84,7 +83,7 @@ export default function ColorWheel({ size = 260, hsv, onChange, className = "" }
       window.removeEventListener("mouseup", onUp);
       window.removeEventListener("touchend", onUp);
     };
-  }, [isDragging, hsv.v]);
+  }, [isDragging, hsv.v, handlePointer]);
 
   const cursor = useMemo(() => {
     const r = radius * hsv.s;

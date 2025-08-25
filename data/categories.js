@@ -1,6 +1,6 @@
 export const GRADIENT_CATEGORIES = [
   // All categories
-  { id: 'all', name: 'All Gradients', color: '#6B7280', description: 'Browse all gradient collections' },
+  // { id: 'all', name: 'All Gradients', color: '#6B7280', description: 'Browse all gradient collections' },
   
   // Color-based categories
   { id: 'red', name: 'Red', color: '#EF4444', description: 'Passionate and energetic red gradients' },

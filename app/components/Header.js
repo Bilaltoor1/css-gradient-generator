@@ -24,6 +24,7 @@ export default function Header() {
     { href: "/gradient", label: "Gradient" },
     { href: "/gradient/explore", label: "Explore Gradients" },
     { href: "/text-gradient", label: "Text Gradient" },
+    { href: "/color-converter", label: "Color Converter" },
     { href: "/explore-colors", label: "Explore Colors" },
     { href: "/blog", label: "Blog" },
   ];

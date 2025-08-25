@@ -36,7 +36,7 @@ export default function PalettePage() {
 			return next;
 		});
 		if (activeIndex >= palette.length) setActiveIndex(0);
-	}, [paletteSize, palette]);
+	}, [paletteSize, palette, activeIndex]);
 
 	const handleSelect = (idx) => setActiveIndex(idx);
 	const handleSelectorMove = (idx, newHsv) => {
