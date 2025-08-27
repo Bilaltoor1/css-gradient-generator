@@ -61,6 +61,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="_2BVpqnfxfRx6alD9ohMojeDq-9jOuk6Kl2kYOzb9Ss" />
         <link rel="canonical" href="https://gradientgenerator-tau.vercel.app/" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
