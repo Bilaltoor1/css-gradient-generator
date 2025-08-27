@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import TextGradientGenerator from "../components/TextGradientGenerator";
+import TextGradientInfoContent from "./components/TextGradientInfoContent";
 import { toast } from "react-hot-toast";
 import { Copy, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -94,6 +95,8 @@ export default function TextGradientPage() {
             </Button>
           </div>
         </div>
+        {/* supporting content comes here */}
+        <TextGradientInfoContent />
       </main>
     </div>
   );

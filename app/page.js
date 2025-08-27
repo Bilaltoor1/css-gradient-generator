@@ -1,105 +1,110 @@
 "use client";
+import { useState, useCallback } from "react";
+import GradientGenerator from "./components/GradientGenerator";
+import GradientInfoContent from "./gradient/components/GradientInfoContent";
+import { Button } from "@/components/ui/button";
+import { RiTailwindCssFill, RiFileCopyLine, RiCss3Fill } from "react-icons/ri";
+import { MdCheck } from "react-icons/md";
 
-import { useRouter } from "next/navigation";
-import { Palette, Zap, ArrowRight } from "lucide-react";
+export default function HomePage() {
+  const [currentGradient, setCurrentGradient] = useState("linear-gradient(90deg, rgba(130, 83, 255, 1) 0%, rgba(78, 205, 196, 1) 100%)");
+  const [tailwindBgClasses, setTailwindBgClasses] = useState("");
 
-const TOOLS = [
-  { 
-    id: "palette", 
-    label: "Color Palette Generator", 
-    icon: Palette,
-    description: "Build palettes like Canva: complementary, monochromatic, analogous, triadic, and tetradic.",
-    route: "/palette",
-    gradient: "from-blue-400 to-purple-600"
-  },
-  { 
-    id: "gradient", 
-    label: "Gradient Generator", 
-    icon: Zap,
-    description: "Create beautiful gradients with multiple color stops, linear and radial types.",
-    route: "/gradient",
-    gradient: "from-purple-400 via-pink-500 to-red-500"
-  },
-];
+  const handleGradientChange = useCallback((gradient) => {
+    setCurrentGradient(gradient);
+  }, []);
 
-export default function Home() {
-  const router = useRouter();
+  // CopyButtons component for both CSS and Tailwind
+  function CopyButtons({ cssGradient, tailwindClass, type }) {
+    const [copied, setCopied] = useState(false);
+    const handleCopy = async () => {
+      try {
+        const text = type === 'css' ? `background: ${cssGradient};` : tailwindClass;
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (e) {
+        // No toast
+      }
+    };
+    return (
+      <Button
+        onClick={handleCopy}
+        size="sm"
+        variant="outline"
+        className="inline-flex items-center gap-2 px-2 py-1 text-xs rounded border border-border transition"
+      >
+        {copied
+          ? <MdCheck className="w-4 h-4 text-green-600" />
+          : <RiFileCopyLine className="w-4 h-4" />}
+        <span>Copy</span>
+      </Button>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-muted">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 md:py-32 text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white drop-shadow mb-6">
-            Color Studio
-          </h1>
-          <p className="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto mb-8">
-            Professional color tools for designers and developers. Create stunning palettes and gradients with ease.
-          </p>
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Hero area */}
+      <section className="w-full bg-card/80 backdrop-blur border-b border-border" style={{ background: currentGradient }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white/90 drop-shadow">Gradient Generator</h1>
+          <p className="mt-3 text-white/80 max-w-2xl">Create beautiful gradients with multiple color stops, linear and radial types.</p>
         </div>
       </section>
 
-      {/* Tools Grid */}
-      <main className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-16 flex-1">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {TOOLS.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <div
-                key={tool.id}
-                className="group relative overflow-hidden rounded-2xl border border-border hover:border-border/80 transition-all duration-300 hover:shadow-xl"
-              >
-                {/* Background Gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${tool.gradient} opacity-10 group-hover:opacity-20 transition-opacity`} />
-                
-                {/* Content */}
-                <div className="relative p-8 bg-card/80 backdrop-blur">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${tool.gradient} text-white`}>
-                      <Icon className="w-8 h-8" />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-semibold mb-2 text-card-foreground">{tool.label}</h2>
-                      <p className="text-muted-foreground mb-6">{tool.description}</p>
-                    </div>
+      {/* Tool Content */}
+      <main className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-10 flex-1">
+        <GradientGenerator onGradientChange={handleGradientChange} onTailwindBgChange={setTailwindBgClasses} />
+        {/* CSS and Tailwind copy section - mobile responsive */}
+        <div className="max-w-6xl mt-4 md:mt-6 space-y-6 md:space-y-8">
+          {/* Copy CSS and Tailwind - side by side layout */}
+          <div className="flex flex-col gap-4">
+            {/* CSS Copy */}
+            <div className="space-y-3 md:space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+                  <RiCss3Fill className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+                  CSS Code
+                </h2>
+              </div>
+              <div className="relative group">
+                <div className="bg-muted border border-border rounded-lg overflow-hidden">
+                  <div className="flex items-center justify-between p-3 bg-muted-foreground/5 border-b">
+                    <span className="text-sm font-medium text-muted-foreground">CSS</span>
+                    <CopyButtons cssGradient={currentGradient} type="css" />
                   </div>
-                  
-                  <button
-                    onClick={() => router.push(tool.route)}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors group-hover:scale-105 transform duration-200"
-                  >
-                    Get Started
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                  <pre className="p-4 text-sm overflow-x-auto">
+                    <code className="text-foreground">{`background: ${currentGradient};`}</code>
+                  </pre>
                 </div>
               </div>
-            );
-          })}
-        </div>
-        
-        {/* Features */}
-        <div className="mt-16 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-foreground">Features</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 rounded-xl bg-card/80 backdrop-blur border border-border">
-              <h3 className="font-semibold mb-2 text-card-foreground">Multiple Color Schemes</h3>
-              <p className="text-sm text-muted-foreground">Complementary, triadic, analogous, and more</p>
             </div>
-            <div className="p-6 rounded-xl bg-card/80 backdrop-blur border border-border">
-              <h3 className="font-semibold mb-2 text-card-foreground">Export Options</h3>
-              <p className="text-sm text-muted-foreground">PDF export and CSS code generation</p>
-            </div>
-            <div className="p-6 rounded-xl bg-card/80 backdrop-blur border border-border">
-              <h3 className="font-semibold mb-2 text-card-foreground">Interactive Tools</h3>
-              <p className="text-sm text-muted-foreground">Drag and drop color selectors</p>
-            </div>
-            <div className="p-6 rounded-xl bg-card/80 backdrop-blur border border-border">
-              <h3 className="font-semibold mb-2 text-card-foreground">Responsive Design</h3>
-              <p className="text-sm text-muted-foreground">Works perfectly on all devices</p>
+            {/* Tailwind Copy */}
+            <div className="space-y-3 md:space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+                  <RiTailwindCssFill className="w-5 h-5 md:w-6 md:h-6 text-cyan-600" />
+                  Tailwind CSS
+                </h2>
+              </div>
+              <div className="relative group">
+                <div className="bg-muted border border-border rounded-lg overflow-hidden">
+                  <div className="flex items-center justify-between p-3 bg-muted-foreground/5 border-b">
+                    <span className="text-sm font-medium text-muted-foreground">Tailwind</span>
+                    <CopyButtons tailwindClass={tailwindBgClasses} type="tailwind" />
+                  </div>
+                  <pre className="p-4 text-sm overflow-x-auto">
+                    <code className="text-foreground break-all">{tailwindBgClasses}</code>
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Informational Content */}
+      <GradientInfoContent />
     </div>
   );
 }

@@ -8,7 +8,6 @@ export default function Footer() {
       title: "Tools",
       links: [
         { href: "/palette", label: "Color Palette Generator" },
-        { href: "/gradient", label: "Gradient Generator" },
         { href: "/text-gradient", label: "Text Gradient Generator" },
         { href: "/color-converter", label: "Color Converter" },
         { href: "/gradient/explore", label: "Explore Gradients" },
@@ -38,16 +37,12 @@ export default function Footer() {
       ]
     },
     {
-      title: "Resources",
+      title: "Legal",
       links: [
-        { href: "/blog", label: "Design Blog" },
-        { href: "/blog/css-gradients-guide", label: "CSS Gradients Guide" },
-        { href: "/blog/color-psychology-web-design", label: "Color Psychology" },
-        { href: "/blog/best-color-palettes-website-design", label: "Color Palettes 2025" },
-        { href: "/blog/modern-web-design-trends", label: "Design Trends" },
-        { href: "/blog/gradient-design-trends-2025", label: "Gradient Trends" },
+        { href: "/privacy-policy", label: "Privacy Policy" },
+        { href: "/sitemap.xml", label: "Sitemap" },
       ]
-    }
+    },
   ];
 
   const popularColors = [
@@ -210,21 +205,21 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <Link href="/" className="text-xl font-bold text-foreground">
-                Gradient Studio
+                Gradient Generator
               </Link>
               <p className="text-sm text-muted-foreground mt-1">
                 Create stunning gradients and color palettes for your designs
               </p>
             </div>
             <div className="text-sm text-muted-foreground">
-              © {currentYear} Gradient Studio. All rights reserved.
+              © {currentYear} Gradient Generator. All rights reserved.
             </div>
           </div>
           
           {/* SEO Footer Text */}
           <div className="mt-6 text-xs text-muted-foreground leading-relaxed">
             <p>
-              Gradient Studio is your ultimate destination for creating beautiful CSS gradients, color palettes, and exploring color theory. 
+              Gradient Generator is your ultimate destination for creating beautiful CSS gradients, color palettes, and exploring color theory. 
               Our free tools help designers and developers generate stunning gradient backgrounds, discover perfect color combinations, 
               and learn about color psychology in web design. Whether you&apos;re looking for warm sunset gradients, cool ocean depths, 
               or vibrant neon glows, our extensive library has thousands of gradient combinations for every project. 

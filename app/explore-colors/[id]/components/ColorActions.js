@@ -87,7 +87,7 @@ export default function ColorActions({ colorId, colorName, hexColor, shades = []
             className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border-white/20"
             disabled={isExporting}
           >
-            <Image className="w-4 h-4 mr-1" aria-hidden="true" />
+            <Image className="w-4 h-4 mr-1" aria-hidden="true" alt="" />
             <span className="hidden sm:inline">Export</span>
             {isExporting && <span className="ml-1">...</span>}
           </Button>

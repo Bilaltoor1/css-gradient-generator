@@ -21,12 +21,11 @@ export default function Header() {
 
   const navLinks = [
     { href: "/palette", label: "Palette" },
-    { href: "/gradient", label: "Gradient" },
     { href: "/gradient/explore", label: "Explore Gradients" },
     { href: "/text-gradient", label: "Text Gradient" },
     { href: "/color-converter", label: "Color Converter" },
     { href: "/explore-colors", label: "Explore Colors" },
-    { href: "/blog", label: "Blog" },
+    // { href: "/blog", label: "Blog" }, // Commented out - Coming Soon
   ];
 
   return (
@@ -35,7 +34,7 @@ export default function Header() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/" className="text-lg font-semibold text-foreground">Color Studio</Link>
+              <Link href="/" className="text-lg font-semibold text-foreground">Gradient Generator</Link>
             </div>
 
             {/* Desktop Navigation */}
@@ -115,7 +114,7 @@ export default function Header() {
                 className="text-lg font-semibold text-card-foreground"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Color Studio
+                Gradient Generator
               </Link>
               <Button
                 variant="ghost"

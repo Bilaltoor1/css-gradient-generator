@@ -6,6 +6,7 @@ import ColorWheel from "../components/ColorWheel";
 import PalettePreview from "../components/PalettePreview";
 import { generatePalette, hsvToHex, hsvToRgb, hsvToHsl, rgbToHsv } from "../components/PaletteUtils";
 import { ArrowLeft } from "lucide-react";
+import PaletteInfoContent from "./components/PaletteInfoContent";
 
 const SCHEMES = [
 	{ id: "complementary", label: "Complementary" },
@@ -246,6 +247,9 @@ export default function PalettePage() {
 					Tip: drag on the wheel to pick hue/saturation. Value (brightness) is fixed to keep colors vivid.
 				</div>
 			</main>
+
+			{/* Palette Information Content */}
+			<PaletteInfoContent />
 		</div>
 	);
 }
