@@ -1,12 +1,5 @@
-import { getAllGradients } from '@/lib/mdx';
-import { getAllColorShades } from '@/lib/mdx';
-
 export default async function sitemap() {
   const baseUrl = 'https://gradientgenerator-tau.vercel.app';
-
-  // Get all gradients and color shades
-  const gradients = await getAllGradients();
-  const colorShades = await getAllColorShades();
 
   // Static pages
   const staticPages = [
@@ -54,27 +47,8 @@ export default async function sitemap() {
       priority: 0.3,
     },
   ];
-
-  // Dynamic gradient pages
-  const gradientPages = gradients.map((gradient) => ({
-    url: `${baseUrl}/gradient/explore/${gradient.slug}`,
-    lastModified: new Date(gradient.frontMatter.createdAt || gradient.frontMatter.date || new Date()),
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
-
-  // Dynamic color shade pages
-  const colorShadePages = colorShades.map((shade) => ({
-    url: `${baseUrl}/explore-colors/${shade.slug}`,
-    lastModified: new Date(shade.frontMatter.createdAt || shade.frontMatter.date || new Date()),
-    changeFrequency: 'monthly',
-    priority: 0.5,
-  }));
-
   // Combine all pages
   return [
     ...staticPages,
-    ...gradientPages,
-    ...colorShadePages,
   ];
 }
